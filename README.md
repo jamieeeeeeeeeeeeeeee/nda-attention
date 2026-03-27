@@ -6,7 +6,15 @@
 
 This repository is a fork of `fla-org/flash-linear-attention` that adds support for **New Delta Attention (NDA)**, a generalisation of [Kimi Delta Attention (KDA)](https://arxiv.org/abs/2510.26692).
 
-NDA replaces the scalar write-strength $$\beta_t\in\mathbb{R}$$ to key-dimension vector $$\boldsymbol{\beta}_t\in\mathbb{R}^{d_k},$$ where $d_k$ is the key dimension. Intuitively, KDA uses a single write strength per token per head, whilst NDA allows the model to control the write strength **independently for each key dimension**.
+NDA replaces the scalar write-strength 
+
+$$\beta_t\in\mathbb{R}$$ 
+
+to key-dimension vector 
+
+$$\boldsymbol{\beta}_t\in\mathbb{R}^{d_k},$$
+
+where $d_k$ is the key dimension. Intuitively, KDA uses a single write strength per token per head, whilst NDA allows the model to control the write strength **independently for each key dimension**.
 
 ## Contributions
 The changes to the original `kda` implementationare all in three places:
@@ -15,15 +23,27 @@ The changes to the original `kda` implementationare all in three places:
 - `fla/models/nda/*.py` for NDA-based model implementations (this is exactly the KDA model with NDA attention layers instead of KDA).
 
 ## Method
-The KDA recursion can be written as: $$\mathbf{S}^\text{KDA}_t = \mathrm{Diag}(\boldsymbol{\alpha}_t)(\mathbf{I}-\beta_t\mathbf{k}_t\mathbf{k}_t^\top)\mathbf{S}^\text{KDA}_{t-1}+\mathbf{\beta}_t\mathbf{k}_t\mathbf{v}_t,$$ where, at time step $t$,
+The KDA recursion can be written as: 
+
+$$\mathbf{S}^\text{KDA}_t = \mathrm{Diag}(\boldsymbol{\alpha}_t)(\mathbf{I}-\beta_t\mathbf{k}_t\mathbf{k}_t^\top)\mathbf{S}^\text{KDA}_{t-1}+\mathbf{\beta}_t\mathbf{k}_t\mathbf{v}_t,$$ 
+
+where, at time step $t$,
 - $\mathbf{S}^\text{KDA}_t\in\mathbb{R}^{d_k\times d_v}$ is the attention state matrix,
 - $\mathbf{k}_t\in\mathbb{R}^{d_k}$ and $\mathbf{v}_t\in\mathbb{R}^{d_v}$ are the key and value vectors,
 - $\boldsymbol{\alpha}_t\in\mathbb{R}^{d_k}$ is a vector that controls the decay rate for each dimension of the state matrix, and 
 - $\beta_t\in\mathbb{R}$ is a scalar that controls the write strength for the entire key vector.
 
-**NDA replaces the scalar $\beta_t$ with a vector $\boldsymbol{\beta}_t\in\mathbb{R}^{d_k}$**, giving $$\mathbf{S}^\text{NDA}_t = \mathrm{Diag}(\boldsymbol{\alpha}_t)(\mathbf{I}-\mathrm{Diag}(\boldsymbol{\beta}_t)\mathbf{k}_t\mathbf{k}_t^\top)\mathbf{S}^\text{NDA}_{t-1}+\mathrm{Diag}(\boldsymbol{\beta}_t)\mathbf{k}_t\mathbf{v}_t.$$ 
+**NDA replaces the scalar $\beta_t$ with a vector $\boldsymbol{\beta}_t\in\mathbb{R}^{d_k}$**, giving 
 
-Equivalently, if we define a write-modulated key $$\tilde{\mathbf{k}}_t=\boldsymbol{\beta}_t\odot\mathbf{k}_t,$$ where $\odot$ is the element-wise product, then the recurrence becomes $$\mathbf{S}^\text{NDA}_t = \mathrm{Diag}(\boldsymbol{\alpha}_t)(\mathbf{I}-\tilde{\mathbf{k}}_t\mathbf{k}_t^\top)\mathbf{S}^\text{NDA}_{t-1}+\tilde{\mathbf{k}}_t\mathbf{v}_t.$$
+$$\mathbf{S}^\text{NDA}_t = \mathrm{Diag}(\boldsymbol{\alpha}_t)(\mathbf{I}-\mathrm{Diag}(\boldsymbol{\beta}_t)\mathbf{k}_t\mathbf{k}_t^\top)\mathbf{S}^\text{NDA}_{t-1}+\mathrm{Diag}(\boldsymbol{\beta}_t)\mathbf{k}_t\mathbf{v}_t.$$ 
+
+Equivalently, if we define a write-modulated key 
+
+$$\tilde{\mathbf{k}}_t=\boldsymbol{\beta}_t\odot\mathbf{k}_t,$$
+
+where $\odot$ is the element-wise product, then the recurrence becomes 
+
+$$\mathbf{S}^\text{NDA}_t = \mathrm{Diag}(\boldsymbol{\alpha}_t)(\mathbf{I}-\tilde{\mathbf{k}}_t\mathbf{k}_t^\top)\mathbf{S}^\text{NDA}_{t-1}+\tilde{\mathbf{k}}_t\mathbf{v}_t.$$
 
 NDA can reduce to KDA if for all $t$, $\boldsymbol{\beta}_t=\beta_t\mathbf{1}$, where $\mathbf{1}\in\mathbb{R}^{d_k}$ is the all-one vector, hence the claim that NDA is a generalisation of KDA. In practice, we have found that NDA doesn't tend to learn a uniform write strength across key dimensions, which maybe suggests that the additional flexibility is indeed being utilised by the model, although on the other hand could also be a result of optimization difficulties in learning a (perhaps optimal) uniform write strength. 
 
