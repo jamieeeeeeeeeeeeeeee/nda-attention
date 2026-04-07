@@ -48,12 +48,14 @@ $$\mathbf{S}^\text{NDA}_t = \mathrm{Diag}(\boldsymbol{\alpha}_t)(\mathbf{I}-\til
 NDA can reduce to KDA if for all $t$, $\boldsymbol{\beta}_t=\beta_t\mathbf{1}$, where $\mathbf{1}\in\mathbb{R}^{d_k}$ is the all-one vector, hence the claim that NDA is a generalisation of KDA. In practice, we have found that NDA doesn't tend to learn a uniform write strength across key dimensions, which maybe suggests that the additional flexibility is indeed being utilised by the model, although on the other hand could also be a result of optimization difficulties in learning a (perhaps optimal) uniform write strength. 
 
 ## Acknowledgements
-This repository is built as a fork of `fla-org/flash-linear-attention`, and **heavily** reuses the KDA implementation and surrounding infrastructure. Thank you to the teams at **Bitdeer** and **Moonshot-AI** (and all contributors to `flash-linear-attention`) for their open-source contributions, which made this work possible. The original `README.md` from `flash-linear-attention` is included below for reference.
+This repository is built as a fork of `fla-org/flash-linear-attention`, and **heavily** reuses the KDA implementation and surrounding infrastructure. Thank you to the teams at **Bitdeer** and **Moonshot-AI** (and all contributors to `flash-linear-attention`) for their open-source contributions, which made this work possible.
 
 And thank you to my tutor, **Dr. Anirbit Mukherjee**, for his guidance, teachings, and support throughout this project.
 
 **Small note**
-This is a research codebase, not all paths from KDA have been completely adapted and there is lines of stale code, and even in the core implementation there are probably bugs and definitley inefficiencies. 
+This is a research codebase, not all paths from KDA have been completely adapted, and there are lines of stale code, and even in the core implementation, there are probably bugs and definitely inefficiencies. 
+
+The original `README.md` from `flash-linear-attention` is included below for reference.
 
 <div align="center">
 
